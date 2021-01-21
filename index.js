@@ -9,16 +9,15 @@ const app = express();
 //Configurar Cors
 app.use(cors());
 
+// Lectura y parseo del body
+app.use( express.json() );
+
 // Base de datos
 dbConection();
 
 // Rutas
-app.get('/',(req,res)=>{
-    res.json({
-        ok: 'true',
-        msg: 'angel re bien wacho'
-    })
-})
+app.use('/api/usuarios', require('./routes/usuarios') );
+app.use('/api/login', require('./routes/auth') );
 
 app.listen( process.env.port, ()=>{
     console.log('Servidor montado en ' + process.env.port)
