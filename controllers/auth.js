@@ -3,7 +3,7 @@ const Usuario = require('../models/usuario');
 const bcrypt = require('bcryptjs');
 
 const { generarJWT } = require('../helpers/jwt');
-const {googleVerify} = require('../helpers/google-verify')
+const {googleVerify} = require('../helpers/google-verify');
 
 
 const login = async(req, res = response)=>{
@@ -36,7 +36,7 @@ const login = async(req, res = response)=>{
 
         res.json({
             ok:true,
-            msg: token
+            token
         })
     } catch (error){
         console.log(error)
@@ -61,7 +61,7 @@ const googleSingIn = async(req,res = response)=>{
             usuario = new Usuario({
                 nombre: name,
                 email,
-                password: '@@',
+                password: '',
                 img: picture,
                 google: true
             })
@@ -76,11 +76,11 @@ const googleSingIn = async(req,res = response)=>{
         
         // Generar Token 
         const token = await generarJWT(usuarioDB.id);
-
+        
         res.json({
             ok:true,
             msg:'Google Singin',
-            name, email, picture
+            token
         })
     } catch (error) {
         res.status(401).json({
@@ -98,10 +98,12 @@ const renewToken = async(req,res = response)=>{
 
     // Generar Token 
     const token = await generarJWT(uid);
+    const usuarioLogeado = await Usuario.findById(uid)
 
     res.json({
         ok:true,
-        token
+        token,
+        usuarioLogeado
     })
 }
 

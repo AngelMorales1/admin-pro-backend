@@ -6,7 +6,6 @@ const Usuario = require('../models/usuario');
 
 const getUsuarios = async (req,res)=>{
     const desde = Number(req.query.desde)|| 0 ;
-    console.log(desde)
 
     const [usuarios, total] = await Promise.all([
         Usuario.find()
@@ -56,7 +55,6 @@ const crearUsuarios = async (req,res = response )=>{
         })
 
     } catch (error){
-        console.log(error)
         res.status(500).json({
             ok: false,
             msg: "error inesperado... revisar logs"
@@ -96,7 +94,14 @@ const actualizarUsuarios = async (req,res = response)=>{
             }
         }
 
-        campos.email = email
+        if (!usuarioDB.google) {
+            campos.email = email
+        }else if (usuarioDB.email !== email) {
+            return res.status(400).json({
+                ok:false,
+                msg: "Usuarios de Google no pueden modificar su mail"
+            })
+        }
 
         const usuarioActualizado = await Usuario.findByIdAndUpdate(id, campos, {new: true})
 
@@ -118,9 +123,7 @@ const actualizarUsuarios = async (req,res = response)=>{
 const deleteUsuario = async (req, res = response)=>{
 
     const id  = req.params.id
-    
     try{
-
         const usuarioDB = await Usuario.findById(id)
 
         if (!usuarioDB) {
@@ -129,9 +132,8 @@ const deleteUsuario = async (req, res = response)=>{
                 msg: 'No existe un usuario con ese ID'
             })
         }
-
         await Usuario.findByIdAndDelete( id )
-
+        
         res.json({
             ok:false,
             msg: 'Usuario eliminado'

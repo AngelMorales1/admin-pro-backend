@@ -10,9 +10,14 @@ const {validarJWT} = require('../middlewares/validar-jwt')
 const {  getMedico,
     postMedico,
     actualizarMedico,
-    borrarMedico} = require('../controllers/medicos')
+    borrarMedico,
+    getMedicoById} = require('../controllers/medicos')
 
-router.get('/',getMedico)
+router.get('/',validarJWT,getMedico)
+
+router.get('/:id',
+        validarJWT,
+        getMedicoById)
 
 router.post('/',
     [
